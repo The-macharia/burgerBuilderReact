@@ -1,13 +1,9 @@
 import React, { Component } from "react";
 import Aux from "../../../hoc/Aux/Aux";
 import Button from "../../UI/Button/Button";
+import { connect } from "react-redux";
 
 class OrderSummary extends Component {
-  //This could be a functional component rather than a class component.
-
-  componentWillUpdate() {
-    console.log('order summary will update')
-  }
 
   render() {
     const ingredientsSummary = Object.keys(this.props.ingredients).map(igKey => {
@@ -19,6 +15,20 @@ class OrderSummary extends Component {
       );
     });
 
+    let button = <Button btnType="Success" clicked={this.props.continue}>Sign In To Continue</Button>
+
+    if (this.props.isAuth){
+      button = (<Aux>
+        <Button btnType="Danger" clicked={this.props.close}>
+          Cancel
+        </Button>
+        <Button btnType="Success" clicked={this.props.continue}>
+          Continue
+        </Button>
+      </Aux>)
+    }
+
+
     return (
       <Aux>
         <h3>Your Order</h3>
@@ -28,16 +38,16 @@ class OrderSummary extends Component {
         <h4>
           Total Price: <strong>{this.props.price.toFixed(2)}</strong>
         </h4>
-
-        <Button btnType="Danger" clicked={this.props.close}>
-          Cancel
-        </Button>
-        <Button btnType="Success" clicked={this.props.continue}>
-          Continue
-        </Button>
+        {button}
       </Aux>
     );
   }
 }
 
-export default OrderSummary;
+const mapStateToProps = state => {
+  return {
+    isAuth: state.auth.token !== null
+  }
+}
+
+export default connect(mapStateToProps)(OrderSummary);
